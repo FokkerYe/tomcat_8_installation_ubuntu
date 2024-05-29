@@ -67,6 +67,33 @@ systemctl enable tomcat.service
 systemctl start tomcat.service
 systemctl status tomcat.service
 ```
+It looks like you installed Tomcat and created the tomcat user, but you're having issues with the login shell of the tomcat user. If you want the tomcat user to use the Bash shell, you need to make sure the user's shell is set to /bin/bash.
+
+Here's how you can ensure the tomcat user is configured correctly:
+Check the Current Shell for the tomcat User:
+Verify the current shell for the tomcat user by inspecting the /etc/passwd file.
+
+```
+
+grep tomcat /etc/passwd
+```
+
+You should see something like this:
+
+plaintext
+```
+tomcat:x:1001:1001::/home/tomcat:/bin/bash
+```
+If the shell is not /bin/bash, you need to change it.
+
+Change the Shell for the tomcat User:
+Use the chsh command to change the shell to /bin/bash.
+
+sh
+
+```
+sudo chsh -s /bin/bash tomcat
+```
 
 
 
