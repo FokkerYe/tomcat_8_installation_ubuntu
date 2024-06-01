@@ -94,6 +94,92 @@ sh
 ```
 sudo chsh -s /bin/bash tomcat
 ```
+## Allow Tomcat to Bind to Port 443
+
+By default, binding to port 443 (a privileged port) requires root privileges. You can use `authbind` to allow Tomcat to bind to port 443 without running as root.
+
+### Step 1: Install `authbind`
+
+```bash
+sudo apt install authbind
+```
+### Step 2: Allow authbind to Use Port 443
+
+```bash
+
+sudo touch /etc/authbind/byport/443
+sudo chmod 500 /etc/authbind/byport/443
+sudo chown tomcat /etc/authbind/byport/443
+```
+### Step 3: Modify the Tomcat Service File to Use authbind
+
+```
+
+sudo nano /etc/systemd/system/tomcat.service
+```
+Modify the ExecStart line to use authbind:
+
+```
+
+ExecStart=/usr/bin/authbind --deep /opt/tomcat/bin/startup.sh
+
+```
+my tomcat service config
+```
+[Unit]
+Description=Tomcat 8 servlet container
+After=network.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+
+Environment="JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64"
+Environment="CATALINA_BASE=/usr/share/apache-tomcat-8.5.33"
+Environment="CATALINA_HOME=/usr/share/apache-tomcat-8.5.33"
+Environment="CATALINA_OPTS=-Xms2048M -Xmx2048M -server -XX:+UseParallelGC"
+
+#ExecStart=/usr/share/apache-tomcat-8.5.33/bin/startup.sh
+ExecStart=/usr/bin/authbind --deep /usr/share/apache-tomcat-8.5.33/bin/startup.s                                                                                                             h
+ExecStop=/usr/share/apache-tomcat-8.5.33/bin/shutdown.sh
 
 
+
+
+[Install]
+WantedBy=multi-user.target
+
+```
+### Step 5: Verify HTTPS Configuration
+
+Ensure the server.xml file has the correct SSL configuration. The relevant part should look like this:
+
+```
+
+<Connector port="443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+           maxThreads="150" SSLEnabled="true">
+    <SSLHostConfig>
+        <Certificate certificateKeystoreFile="/path/to/keystore.jks"
+                     certificateKeystorePassword="your_keystore_password"
+                     type="RSA" />
+    </SSLHostConfig>
+</Connector>
+```
+## Reload the Systemd Daemon
+
+Reload the systemd daemon to apply the changes:
+
+```
+
+sudo systemctl daemon-reload
+```
+## Restart Tomcat
+
+Restart the Tomcat service:
+
+```
+
+sudo systemctl restart tomcat
+```
 
