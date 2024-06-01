@@ -141,7 +141,7 @@ Environment="CATALINA_HOME=/usr/share/apache-tomcat-8.5.33"
 Environment="CATALINA_OPTS=-Xms2048M -Xmx2048M -server -XX:+UseParallelGC"
 
 #ExecStart=/usr/share/apache-tomcat-8.5.33/bin/startup.sh
-ExecStart=/usr/bin/authbind --deep /usr/share/apache-tomcat-8.5.33/bin/startup.s                                                                                                             h
+ExecStart=/usr/bin/authbind --deep /usr/share/apache-tomcat-8.5.33/bin/startup.sh                                                                                                             h
 ExecStop=/usr/share/apache-tomcat-8.5.33/bin/shutdown.sh
 
 
